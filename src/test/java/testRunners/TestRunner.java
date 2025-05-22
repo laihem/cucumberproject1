@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
                 "pretty",
                 "json:target/cucumber-report/cucumber.json",
                 "html:target/cucumber-report/cucumber.html"},
-        dryRun = false
-        //tags = "@p3"
+        dryRun = false,
+        tags = "@p7"
 
 )
 public class TestRunner {

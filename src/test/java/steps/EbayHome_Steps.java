@@ -3,7 +3,10 @@ package steps;
 import io.cucumber.java.en.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.util.List;
 
 import static org.junit.Assert.fail;
 
@@ -42,21 +45,59 @@ public class EbayHome_Steps {
 
     }
 
-    @When("I serach for iPhone 11")
-    public void i_serach_for_iphone11() {
-       driver.findElement(By.id("gh-ac")).sendKeys("iphone 11");
+    @When("I search for {string}")
+    public void i_serach_for_iphone11(String item) {
+       driver.findElement(By.id("gh-ac")).sendKeys(item);
         driver.findElement(By.id("gh-search-btn")).click();
 
     }
-    @Then("I validate atleast 1000 search items present")
-    public void i_validate_atleast_search_items_present() {
-      String itemCount = driver.findElement(By.cssSelector("h1.srp-controls__count-heading span.BOLD:first-child")).getText().trim();
-      String itemCount2 = itemCount.replace(",", "");
-      int itemCountInt = Integer.parseInt(itemCount2);
 
-      if(itemCountInt <= 1000){
-          fail("Less than 1000 results shown");
-      }
+
+    @When("I serach for {string} in {string} category")
+    public void iSerachForSoapInBaByCategory(String str1, String str2) {
+        driver.findElement(By.xpath("//*[@id='gh-ac']")).sendKeys(str1);
+        driver.findElement(By.xpath("//select[@id='gh-cat']")).click();
+        List<WebElement> cat =  driver.findElements(By.xpath("//select[@id='gh-cat']/option"));
+        for(WebElement el : cat){
+            if(el.getText().trim().equals(str2)){
+                el.click();
+                break;
+            }
+        }
+    }
+    @Then("I validate at least {int} search items present")
+    public void i_validate_atleast_search_items_present(int count) throws InterruptedException {
+        Thread.sleep(3000);
+//        //h1[contains(@class, 'srp-controls__count-heading')]
+        String itemCount = driver.findElement(By.cssSelector("h1.srp-controls__count-heading span.BOLD:first-child")).getText().trim();
+        String itemCount2 = itemCount.replace(",", "");
+        int itemCountInt = Integer.parseInt(itemCount2);
+
+        if(itemCountInt <= count){
+            fail("Less than 1000 results shown");
+        }
 //        driver.quit();
     }
+
+    @When("I click on {string}")
+    public void i_click_on(String string) throws InterruptedException {
+        driver.findElement(By.linkText(string)).click();
+        Thread.sleep(3000);
+    }
+
+    @Then("I validate that page navigates to {string} and title contains {string}")
+    public void i_validate_that_page_navigates_to_and_title_contains(String url, String title) {
+        String actuTitle = driver.getTitle();
+        String actUrl = driver.getCurrentUrl();
+
+        if(!actUrl.equals(url)){
+            fail("Page does not navigate to expected url: " + url);
+        }
+
+        if(actuTitle.equals((title))){
+            fail("title mismatch!");
+        }
+        }
+
+
 }
